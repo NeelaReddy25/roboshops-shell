@@ -27,7 +27,7 @@ else
     echo "You are super user."
 fi
 
-dnf install python3.12 gcc python3-devel -y &>>$LOGFILE
+dnf install gcc python3-devel -y &>>$LOGFILE
 VALIDATE $? "Installing python"
 
 id roboshop &>>$LOGFILE
@@ -50,7 +50,7 @@ rm -rf /app/*
 unzip /tmp/payment.zip &>>$LOGFILE
 VALIDATE $? "Extracting the payment code"
 
-pip3.11 install -r requirements.txt &>>$LOGFILE
+pip3 install -r requirements.txt &>>$LOGFILE
 VALIDATE $? "Installing python requirements"
 
 cp /home/ec2-user/roboshops-shell/payment.service /etc/systemd/system/payment.service &>>$LOGFILE
