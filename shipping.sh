@@ -76,6 +76,9 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL server"
 
+cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
+VALIDATE $? "Copied shipping sql"
+
 mysql -h $MYSQL_SERVER -uroot -p${mysql_root_password} < /app/schema/shipping.sql  &>>$LOGFILE
 VALIDATE $? "Schema loading"
 
