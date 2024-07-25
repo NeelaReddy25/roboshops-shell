@@ -76,7 +76,7 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL server"
 
-mysql -h $MYSQL_SERVER -u shipping -p${mysql_root_password} < /app/schema/shipping.sql &>>$LOGFILE
+mysql -h $MYSQL_SERVER -u root -p${mysql_root_password} < /app/schema/shipping.sql &>>$LOGFILE
 VALIDATE $? "Schema loading"
 
 systemctl restart shipping &>>$LOGFILE
