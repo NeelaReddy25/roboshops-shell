@@ -50,8 +50,8 @@ rm -rf /app/*
 unzip /tmp/payment.zip &>>$LOGFILE
 VALIDATE $? "Extracting the payment code"
 
-# pip3.11 install -r requirements.txt &>>$LOGFILE
-# VALIDATE $? "Installing python requirements"
+pip3.11 install -r requirements.txt &>>$LOGFILE
+VALIDATE $? "Installing python requirements"
 
 cp /home/ec2-user/roboshops-shell/payment.service /etc/systemd/system/payment.service &>>$LOGFILE
 VALIDATE $? "Copied payment service"
