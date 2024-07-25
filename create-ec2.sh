@@ -13,6 +13,7 @@ for name in ${instances[@]}; do
     fi
     echo "Creating instance for: $name with instance type: $instance_type"
     instance_id=$(aws ec2 run-instances --image-id ami-041e2ea9402c46c32 --instance-type $instance_type --security-group-ids sg-0cd5626364cf1e071 --subnet-id subnet-045b66b79d1f5cc3f --query 'Instances[0].InstanceId' --output text)
+    aws ec2 terminate-instances --instance-ids $instance_id
     echo "Instance created for: $name"
 
     aws ec2 create-tags --resources $instance_id --tags Key=Name,Value=$name
@@ -29,19 +30,22 @@ for name in ${instances[@]}; do
 
     echo "Creating R53 record for: $name"
     aws route53 change-resource-record-sets --hosted-zone-id $hosted_zone_id --change-batch '
-  {
-    "Comment": "Creating a record set for '$name'"
-    ,"Changes": [{
-      "Action"              : "UPSERT"
-      ,"ResourceRecordSet"  : {
-        "Name"              : "'$name.$domain_name'"
-        ,"Type"             : "A"
-        ,"TTL"              : 1
-        ,"ResourceRecords"  : [{
-            "Value"         : "'$ip_to_use'"
+    {
+        "Comment": "Creating a record set for '$name'"
+        ,"Changes": [{
+        "Action"              : "UPSERT"
+        ,"ResourceRecordSet"  : {
+            "Name"              : "'$name.$domain_name'"
+            ,"Type"             : "A"
+            ,"TTL"              : 1
+            ,"ResourceRecords"  : [{
+                "Value"         : "'$ip_to_use'"
+            }]
+        }
         }]
-      }
-    }]
-  }'
+    }'
+
+    aws ec2 terminate-instances --instance-ids $instance_id
+
 
 done
