@@ -71,7 +71,7 @@ VALIDATE $? "Enabling catalogue"
 systemctl start catalogue &>>$LOGFILE
 VALIDATE $? "Starting catalogue"
 
-cp /hom/ec2-user/roboshops-shell/mongo.repo /etc/yum.repo.d/mongo.repo &>>$LOGFILE
+cp /hom/ec2-user/roboshops-shell/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
 VALIDATE $? "Copied mongo repo"
 
 dnf install -y mongodb-mongosh &>>$LOGFILE
