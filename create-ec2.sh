@@ -12,18 +12,18 @@ for name in ${instances[@]}; do
         instance_type="t3.micro"
     fi
     echo "Creating instance for: $name with instancetype: $instance_type"
-    aws ec2 run-instances --image-id ami-041e2ea9402c46c32 --instance-type $instance-type --security-group-ids sg-0cd5626364cf1e071 --subnet-id subnet-045b66b79d1f5cc3f --query "Instances[0].InstanceId" --output text
-    echo "Instances created for: $name"
+    instance_id=$(aws ec2 run-instances --image-id ami-041e2ea9402c46c32 --instance-type $instance-type --security-group-ids sg-0cd5626364cf1e071 --subnet-id subnet-045b66b79d1f5cc3f --query 'Instances[0].InstanceId' --output text)
+    echo "Instance created for: $name"
 
     aws ec2 create-tags --resources $instance_id --tags Key=Name,Value=$name
 
     if [ $name == "web" ]
     then
         aws ec2 wait instance-running --instance-ids $instance_id
-        aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].[PublicIpAddress]' --output text
+        public_ip=$(aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].[PublicIpAddress]' --output text)
         ip_to_use=$public_ip
     else
-        aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].[PrivateIpAddress]' --output text
+        private_ip=$(aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].[PrivateIpAddress]' --output text)
         ip_to_use=$private_ip
     fi
 
