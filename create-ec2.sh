@@ -43,8 +43,4 @@ for name in ${instances[@]}; do
         }
         }]
     }'
-
-    aws ec2 terminate-instances --instance-ids $instance_id
-
-
 done
