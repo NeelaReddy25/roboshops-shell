@@ -59,7 +59,7 @@ VALIDATE $? "Get"
 go build &>>$LOGFILE
 VALIDATE $? "BUILD"
 
-cp /home/ec2-user/roboshop-shell/api-tier/dispatch.service /etc/systemd/system/dispatch.service &>>$LOGFILE
+cp /home/ec2-user/roboshops-shell/dispatch.service /etc/systemd/system/dispatch.service &>>$LOGFILE
 VALIDATE $? "Copied dispatch service"
 
 systemctl daemon-reload &>>$LOGFILE
