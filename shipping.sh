@@ -8,7 +8,7 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-MYSQL_SERVER="mysql.neelareddy.store"
+#MYSQL_SERVER="mysql.neelareddy.store"
 
 echo "Please enter DB Password:"
 read -s mysql_root_password
@@ -76,7 +76,7 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL server"
 
-mysql -h $MYSQL_SERVER -uroot -p${mysql_root_password} < /app/schema/shipping.sql &>>$LOGFILE
+mysql -h mysql.neelareddy.store -uroot -p${mysql_root_password} < /app/schema/shipping.sql &>>$LOGFILE
 VALIDATE $? "Schema loading"
 
 systemctl restart shipping &>>$LOGFILE
