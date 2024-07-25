@@ -76,8 +76,8 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL server"
 
-mysql -h mysql.neelareddy.store -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
-VALIDATE $? "Schema loading"
+# mysql -h mysql.neelareddy.store -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
+# VALIDATE $? "Schema loading"
 
 systemctl restart shipping &>>$LOGFILE
 VALIDATE $? "Restarting shipping"
