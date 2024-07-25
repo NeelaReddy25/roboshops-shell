@@ -8,6 +8,7 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+MONGODB_HOST="mongodb.neelareddy.store"
 
 VALIDATE(){
     if [ $1 -ne 0 ]
@@ -71,11 +72,11 @@ VALIDATE $? "Enabling catalogue"
 systemctl start catalogue &>>$LOGFILE
 VALIDATE $? "Starting catalogue"
 
-cp mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
-VALIDATE $? "Copied mongo repo"
+cp /home/ec2-user/roboshops-shell/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
+VALIDATE $? "Coping mongo repo"
 
 dnf install -y mongodb-mongosh &>>$LOGFILE
-VALIDATE $? "Installing MongoDB"
+VALIDATE $? "Installing MongoDB client"
 
-mongosh --host mongodb.neelareddy.store </app/schema/catalogue.js &>>$LOGFILE
-VALIDATE $? "Loading MongoDB data"
+mongosh --host $MONGODB_HOST </app/schema/catalogue.js &>>$LOGFILE
+VALIDATE $? "Loading catalogue data into MongoDB"
