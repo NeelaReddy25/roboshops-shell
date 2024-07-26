@@ -44,7 +44,7 @@ else
     echo -e "Roboshop user already created...$Y SKIPPING $N"
 fi
 
-rm -rf /app/* $LOGFILE
+rm -rf /app/* &>>$LOGFILE
 VALIDATE $? "clean up existing directory"
 
 mkdir -p /app &>>$LOGFILE
