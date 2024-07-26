@@ -60,9 +60,6 @@ VALIDATE $? "Packaging shipping"
 mv target/shipping-1.0.jar shipping.jar &>>$LOGFILE
 VALIDATE $? "Renaming the artifact"
 
-rm -rf /etc/systemd/system/shipping.service &>>$LOGFILE
-VALIDATE $? "Remove the old files "
-
 cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>>$LOGFILE
 VALIDATE $? "Copying service file"
 
