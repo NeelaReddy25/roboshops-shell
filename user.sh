@@ -55,7 +55,7 @@ VALIDATE $? "Downloading user files"
 cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
 
-rm -rf /app $LOGFILE
+rm -rf /app/* $LOGFILE
 VALIDATE $? "clean up existing directory"
 
 unzip /tmp/user.zip &>>$LOGFILE

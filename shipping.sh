@@ -53,7 +53,7 @@ VALIDATE $? "Downloading shipping code"
 cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
 
-rm -rf /app $LOGFILE
+rm -rf /app/* $LOGFILE
 VALIDATE $? "clean up existing directory"
 
 unzip /tmp/shipping.zip &>>$LOGFILE

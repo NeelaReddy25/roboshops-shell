@@ -48,7 +48,7 @@ VALIDATE $? "Downloading payment code"
 cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
 
-rm -rf /app $LOGFILE
+rm -rf /app/* $LOGFILE
 VALIDATE $? "clean up existing directory"
 
 unzip /tmp/payment.zip &>>$LOGFILE

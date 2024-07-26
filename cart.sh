@@ -55,7 +55,7 @@ VALIDATE $? "Downloading cart files"
 cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
 
-rm -rf /app $LOGFILE
+rm -rf /app/* $LOGFILE
 VALIDATE $? "clean up existing directory"
 
 unzip /tmp/cart.zip &>>$LOGFILE

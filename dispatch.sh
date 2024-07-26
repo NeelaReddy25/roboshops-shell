@@ -45,8 +45,12 @@ VALIDATE $? "Creating app directory"
 curl -L -o /tmp/dispatch.zip https://roboshop-builds.s3.amazonaws.com/dispatch.zip &>>$LOGFILE
 VALIDATE $? "Downloading dispatch code"
 
-cd /app 
-rm -rf /app/*
+cd /app  &>>$LOGFILE
+VALIDATE $? "Moving to app directory"
+
+rm -rf /app/* $LOGFILE
+VALIDATE $? "clean up existing directory"
+
 unzip /tmp/dispatch.zip &>>$LOGFILE
 VALIDATE $? "Extracting the dispatch code"
 
