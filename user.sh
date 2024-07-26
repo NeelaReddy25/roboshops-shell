@@ -46,6 +46,9 @@ else
     echo -e "Roboshop user already created...$Y SKIPPING $N"
 fi
 
+rm -rf /app $LOGFILE
+VALIDATE $? "clean up existing directory"
+
 mkdir -p /app &>>$LOGFILE
 VALIDATE $? "Creating directory"
 
@@ -54,9 +57,6 @@ VALIDATE $? "Downloading user files"
 
 cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
-
-rm -rf /app/* $LOGFILE
-VALIDATE $? "clean up existing directory"
 
 unzip /tmp/user.zip &>>$LOGFILE
 VALIDATE $? "Extracting user code"
