@@ -83,8 +83,8 @@ VALIDATE $? "Installing MySQL server"
 # cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
 # VALIDATE $? "Copied shipping sql"
 
-# mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
-# VALIDATE $? "Schema loading"
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
+VALIDATE $? "Schema loading"
 
 # mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e "use cities" &>> $LOGFILE
 # if [ $? -ne 0 ]
