@@ -82,12 +82,12 @@ VALIDATE $? "Copying mongo repo"
 dnf install -y mongodb-mongosh &>>$LOGFILE
 VALIDATE $? "Installing MongoDB client"
 
-SCHEMA_EXISTS=$(mongosh --host $MONGO_HOST --quiet --eval "db.getMongo().getDBNames().indexOf('users')") &>> $LOGFILE
+SCHEMA_EXISTS=$(mongosh --host $MONGODB_HOST --quiet --eval "db.getMongo().getDBNames().indexOf('users')") &>> $LOGFILE
 
 if [ $SCHEMA_EXISTS -lt 0 ]
 then
     echo "Schema does not exists ... LOADING"
-    mongosh --host $MONGO_HOST </app/schema/user.js &>> $LOGFILE
+    mongosh --host $MONGODB_HOST </app/schema/user.js &>> $LOGFILE
     VALIDATE $? "Loading user data"
 else
     echo -e "schema already exists... $Y SKIPPING $N"
