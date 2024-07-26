@@ -83,18 +83,18 @@ VALIDATE $? "Installing MySQL server"
 # cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
 # VALIDATE $? "Copied shipping sql"
 
-# mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
-# VALIDATE $? "Schema loading"
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
+VALIDATE $? "Schema loading"
 
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e "use cities" &>> $LOGFILE
-if [ $? -ne 0 ]
-then
-    echo "Schema is ... LOADING"
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql &>> $LOGFILE
-    VALIDATE $? "Loading schema"
-else
-    echo -e "Schema already exists... $Y SKIPPING $N"
-fi
+# mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e "use cities" &>> $LOGFILE
+# if [ $? -ne 0 ]
+# then
+#     echo "Schema is ... LOADING"
+#     mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql &>> $LOGFILE
+#     VALIDATE $? "Loading schema"
+# else
+#     echo -e "Schema already exists... $Y SKIPPING $N"
+# fi
 
 systemctl restart shipping &>>$LOGFILE
 VALIDATE $? "Restarting shipping"
