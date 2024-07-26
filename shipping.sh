@@ -110,7 +110,7 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-MYSQL_HOST=mysql.neelareddy.store
+MYSQL_HOST="mysql.neelareddy.store"
 
 VALIDATE(){
    if [ $1 -ne 0 ]
