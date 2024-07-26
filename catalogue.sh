@@ -13,7 +13,7 @@ MONGODB_HOST="mongodb.neelareddy.store"
 VALIDATE(){
     if [ $1 -ne 0 ]
     then
-        echo -e "$2...$R FALIURE $N"
+        echo -e "$2...$R FAILURE $N"
         exit1
     else
         echo -e "$2...$G SUCCESS $N"
@@ -29,10 +29,10 @@ else
 fi
 
 dnf module disable nodejs -y &>>$LOGFILE
-VALIDATE $? "Disabling Nodejs"
+VALIDATE $? "Disabling current nodejs"
 
 dnf module enable nodejs:20 -y &>>$LOGFILE
-VALIDATE $? "Enabling Nodejs"
+VALIDATE $? "Enabling nodejs:20"
 
 dnf install nodejs -y &>>$LOGFILE
 VALIDATE $? "Installing Nodejs"
@@ -41,7 +41,7 @@ id roboshop &>>$LOGFILE
 if [ $? -ne 0 ]
 then
     useradd roboshop &>>$LOGFILE
-    VALIDATE $? "Creating roboshop user"
+    VALIDATE $? "Adding roboshop user"
 else
     echo -e "Roboshop user already created...$Y SKIPPING $N"
 fi
@@ -52,8 +52,12 @@ VALIDATE $? "Creating directory"
 curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOGFILE
 VALIDATE $? "Downloading catalogue files"
 
-cd /app 
-rm -rf /app/*
+cd /app  &>>$LOGFILE
+VALIDATE $? "Moving to app directory"
+
+rm -rf /app $LOGFILE
+VALIDATE $? "clean up existing directory"
+
 unzip /tmp/catalogue.zip &>>$LOGFILE
 VALIDATE $? "Extracting catalogue code"
 
@@ -78,5 +82,13 @@ VALIDATE $? "Coping mongo repo"
 dnf install -y mongodb-mongosh &>>$LOGFILE
 VALIDATE $? "Installing MongoDB client"
 
-mongosh --host $MONGODB_HOST </app/schema/catalogue.js &>>$LOGFILE
-VALIDATE $? "Loading catalogue data into MongoDB"
+SCHEMA_EXISTS=$(mongosh --host $MONGO_HOST --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')") &>> $LOGFILE
+
+if [ $SCHEMA_EXISTS -lt 0 ]
+then
+    echo "Schema does not exists ... LOADING"
+    mongosh --host $MONGO_HOST </app/schema/catalogue.js &>> $LOGFILE
+    VALIDATE $? "Loading catalogue data"
+else
+    echo -e "schema already exists... $Y SKIPPING $N"
+fi

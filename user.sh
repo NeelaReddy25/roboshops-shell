@@ -13,7 +13,7 @@ MONGODB_HOST="mongodb.neelareddy.store"
 VALIDATE(){
     if [ $1 -ne 0 ]
     then
-        echo -e "$2...$R FALIURE $N"
+        echo -e "$2...$R FAILURE $N"
         exit1
     else
         echo -e "$2...$G SUCCESS $N"
@@ -32,7 +32,7 @@ dnf module disable nodejs -y &>>$LOGFILE
 VALIDATE $? "Disabling Nodejs"
 
 dnf module enable nodejs:20 -y &>>$LOGFILE
-VALIDATE $? "Enabling Nodejs"
+VALIDATE $? "Enabling nodejs:20"
 
 dnf install nodejs -y &>>$LOGFILE
 VALIDATE $? "Installing Nodejs"
@@ -52,8 +52,12 @@ VALIDATE $? "Creating directory"
 curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip &>>$LOGFILE
 VALIDATE $? "Downloading user files"
 
-cd /app 
-rm -rf /app/*
+cd /app  &>>$LOGFILE
+VALIDATE $? "Moving to app directory"
+
+rm -rf /app $LOGFILE
+VALIDATE $? "clean up existing directory"
+
 unzip /tmp/user.zip &>>$LOGFILE
 VALIDATE $? "Extracting user code"
 
@@ -73,10 +77,18 @@ systemctl start user &>>$LOGFILE
 VALIDATE $? "Starting user"
 
 cp /home/ec2-user/roboshops-shell/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
-VALIDATE $? "Coping mongo repo"
+VALIDATE $? "Copying mongo repo"
 
 dnf install -y mongodb-mongosh &>>$LOGFILE
 VALIDATE $? "Installing MongoDB client"
 
-mongosh --host $MONGODB_HOST </app/schema/user.js &>>$LOGFILE
-VALIDATE $? "Loading user data into MongoDB"
+SCHEMA_EXISTS=$(mongosh --host $MONGO_HOST --quiet --eval "db.getMongo().getDBNames().indexOf('users')") &>> $LOGFILE
+
+if [ $SCHEMA_EXISTS -lt 0 ]
+then
+    echo "Schema does not exists ... LOADING"
+    mongosh --host $MONGO_HOST </app/schema/user.js &>> $LOGFILE
+    VALIDATE $? "Loading user data"
+else
+    echo -e "schema already exists... $Y SKIPPING $N"
+fi

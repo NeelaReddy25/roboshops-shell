@@ -1,6 +1,6 @@
 #!/bin/bash
 
-instances=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "web")
+instances=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "web" "dispatch")
 domain_name="neelareddy.store"
 hosted_zone_id="Z001712433NLPH2AI8HH5"
 

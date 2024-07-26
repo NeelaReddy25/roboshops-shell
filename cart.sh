@@ -13,7 +13,7 @@ MONGODB_HOST="mongodb.neelareddy.store"
 VALIDATE(){
     if [ $1 -ne 0 ]
     then
-        echo -e "$2...$R FALIURE $N"
+        echo -e "$2...$R FAILURE $N"
         exit1
     else
         echo -e "$2...$G SUCCESS $N"
@@ -52,8 +52,12 @@ VALIDATE $? "Creating directory"
 curl -L -o /tmp/cart.zip https://roboshop-builds.s3.amazonaws.com/cart.zip &>>$LOGFILE
 VALIDATE $? "Downloading cart files"
 
-cd /app 
-rm -rf /app/*
+cd /app  &>>$LOGFILE
+VALIDATE $? "Moving to app directory"
+
+rm -rf /app $LOGFILE
+VALIDATE $? "clean up existing directory"
+
 unzip /tmp/cart.zip &>>$LOGFILE
 VALIDATE $? "Extracting cart code"
 

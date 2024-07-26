@@ -8,16 +8,16 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-MYSQL_SERVER="mysql.neelareddy.store"
+MYSQL_HOST="mysql.neelareddy.store"
 
-echo "Please enter DB Password:"
-read -s mysql_root_password
+# echo "Please enter DB Password:"
+# read -s mysql_root_password
 
 
 VALIDATE(){
     if [ $1 -ne 0 ]
     then
-        echo -e "$2...$R FALIURE $N"
+        echo -e "$2...$R FAILURE $N"
         exit1
     else
         echo -e "$2...$G SUCCESS $N"
@@ -50,8 +50,12 @@ VALIDATE $? "Creating directory"
 curl -L -o /tmp/shipping.zip https://roboshop-builds.s3.amazonaws.com/shipping.zip &>>$LOGFILE
 VALIDATE $? "Downloading shipping code"
 
-cd /app
-rm -rf /app/*
+cd /app  &>>$LOGFILE
+VALIDATE $? "Moving to app directory"
+
+rm -rf /app $LOGFILE
+VALIDATE $? "clean up existing directory"
+
 unzip /tmp/shipping.zip &>>$LOGFILE
 VALIDATE $? "Extracting the shipping code"
 
@@ -76,11 +80,21 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL server"
 
-cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
-VALIDATE $? "Copied shipping sql"
+# cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
+# VALIDATE $? "Copied shipping sql"
 
-mysql -h $MYSQL_SERVER -uroot -p${mysql_root_password} < /app/schema/shipping.sql  &>>$LOGFILE
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql  &>>$LOGFILE
 VALIDATE $? "Schema loading"
+
+# mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e "use cities" &>> $LOGFILE
+# if [ $? -ne 0 ]
+# then
+#     echo "Schema is ... LOADING"
+#     mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/schema/shipping.sql &>> $LOGFILE
+#     VALIDATE $? "Loading schema"
+# else
+#     echo -e "Schema already exists... $Y SKIPPING $N"
+# fi
 
 systemctl restart shipping &>>$LOGFILE
 VALIDATE $? "Restarting shipping"
