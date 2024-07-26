@@ -50,6 +50,7 @@ VALIDATE $? "Downloading shipping application"
 cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
 
+rm -rf /app/*
 unzip /tmp/shipping.zip &>> $LOGFILE
 VALIDATE $? "Extracting shipping application"
 
