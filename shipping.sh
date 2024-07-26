@@ -29,55 +29,55 @@ else
 fi
 
 
-dnf install maven -y &>> $LOGFILE
+dnf install maven -y &>>$LOGFILE
 VALIDATE $? "Installing Maven"
 
-id roboshop &>> $LOGFILE
+id roboshop &>>$LOGFILE
 if [ $? -ne 0 ]
 then
-    useradd roboshop &>> $LOGFILE
+    useradd roboshop &>>$LOGFILE
     VALIDATE $? "Adding roboshop user"
 else
     echo -e "roboshop user already exist...$Y SKIPPING $N"
 fi
 
-rm -rf /app &>> $LOGFILE
+rm -rf /app &>>$LOGFILE
 VALIDATE $? "clean up existing directory"
 
-mkdir -p /app &>> $LOGFILE
+mkdir -p /app &>>$LOGFILE
 VALIDATE $? "Creating app directory"
 
-curl -L -o /tmp/shipping.zip https://roboshop-builds.s3.amazonaws.com/shipping.zip &>> $LOGFILE
+curl -L -o /tmp/shipping.zip https://roboshop-builds.s3.amazonaws.com/shipping.zip &>>$LOGFILE
 VALIDATE $? "Downloading shipping application"
 
-cd /app  &>> $LOGFILE
+cd /app  &>>$LOGFILE
 VALIDATE $? "Moving to app directory"
 
 unzip /tmp/shipping.zip &>> $LOGFILE
 VALIDATE $? "Extracting shipping application"
 
-mvn clean package &>> $LOGFILE
+mvn clean package &>>$LOGFILE
 VALIDATE $? "Packaging shipping"
 
-mv target/shipping-1.0.jar shipping.jar &>> $LOGFILE
+mv target/shipping-1.0.jar shipping.jar &>>$LOGFILE
 VALIDATE $? "Renaming the artifact"
 
-cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>> $LOGFILE
+cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>>$LOGFILE
 VALIDATE $? "Copying service file"
 
-systemctl daemon-reload &>> $LOGFILE
+systemctl daemon-reload &>>$LOGFILE
 VALIDATE $? "Daemon reload"
 
-systemctl enable shipping  &>> $LOGFILE
+systemctl enable shipping  &>>$LOGFILE
 VALIDATE $? "Enabling shipping"
 
-systemctl start shipping &>> $LOGFILE
+systemctl start shipping &>>$LOGFILE
 VALIDATE $? "Starting shipping"
 
-dnf install mysql -y &>> $LOGFILE
+dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL"
 
-mysql -h $MYSQL_SERVER -uroot -pRoboShop@1 -e "use cities" &>> $LOGFILE
+mysql -h $MYSQL_SERVER -uroot -pRoboShop@1 -e "use cities" &>>$LOGFILE
 if [ $? -ne 0 ]
 then
     echo "Schema is ... LOADING"
@@ -87,5 +87,5 @@ else
     echo -e "Schema already exists... $Y SKIPPING $N"
 fi
 
-systemctl restart shipping &>> $LOGFILE
+systemctl restart shipping &>>$LOGFILE
 VALIDATE $? "Restarted Shipping"
