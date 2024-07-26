@@ -60,11 +60,14 @@ VALIDATE $? "Packaging shipping"
 mv target/shipping-1.0.jar shipping.jar &>>$LOGFILE
 VALIDATE $? "Renaming the artifact"
 
-rm -rf  /etc/systemd/system/* &>>$LOGFILE
-VALIDATE $? "Removing service file"
-
-cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>>$LOGFILE
-VALIDATE $? "Copying service file"
+if [ $? -ne 0 ]
+then
+    echo "Copying is ... LOADING"
+    cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>>$LOGFILE
+    VALIDATE $? "Copying service file"
+else
+    echo -e "Copied already exists... $Y SKIPPING $N"
+fi
 
 systemctl daemon-reload &>>$LOGFILE
 VALIDATE $? "Daemon reload"
