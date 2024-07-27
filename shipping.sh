@@ -1,96 +1,89 @@
 #!/bin/bash
 
-ID=$(id -u)
+USERID=$(id -u)
+TIMESTAMP=$(date +%F-%H-%M-%S)
+SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
+LOGFILE=/tmp/$SCRIPT_NAME-$TIMESTAMP.log
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-
-TIMESTAMP=$(date +%F-%H-%M-%S)
-LOGFILE="/tmp/$0-$TIMESTAMP.log"
-
-echo "script stareted executing at $TIMESTAMP" &>> $LOGFILE
+MYSQL_SERVER=mysql.neelareddy.store
 
 VALIDATE(){
-    if [ $1 -ne 0 ]
-    then
-        echo -e "$2 ... $R FAILED $N"
+   if [ $1 -ne 0 ]
+   then
+        echo -e "$2...$R FAILURE $N"
         exit 1
     else
-        echo -e "$2 ... $G SUCCESS $N"
+        echo -e "$2...$G SUCCESS $N"
     fi
 }
 
-if [ $ID -ne 0 ]
+if [ $USERID -ne 0 ]
 then
-    echo -e "$R ERROR:: Please run this script with root access $N"
-    exit 1 # you can give other than 0
+    echo "Please run this script with root access."
+    exit 1 # manually exit if error comes.
 else
-    echo "You are root user"
-fi # fi means reverse of if, indicating condition end
-
-dnf install maven -y &>> $LOGFILE
-
-id roboshop #if roboshop user does not exist, then it is failure
-if [ $? -ne 0 ]
-then
-    useradd roboshop
-    VALIDATE $? "roboshop user creation"
-else
-    echo -e "roboshop user already exist $Y SKIPPING $N"
+    echo "You are super user."
 fi
 
-mkdir -p /app
 
-VALIDATE $? "creating app directory"
+dnf install maven -y &>>$LOGFILE
+VALIDATE $? "Installing Maven"
 
-curl -L -o /tmp/shipping.zip https://roboshop-builds.s3.amazonaws.com/shipping.zip &>> $LOGFILE
+id roboshop &>>$LOGFILE
+if [ $? -ne 0 ]
+then
+    useradd roboshop &>>$LOGFILE
+    VALIDATE $? "Adding roboshop user"
+else
+    echo -e "roboshop user already exist...$Y SKIPPING $N"
+fi
 
-VALIDATE $? "Downloading shipping"
+mkdir -p /app &>>$LOGFILE
+VALIDATE $? "Creating app directory"
 
-cd /app
+curl -L -o /tmp/shipping.zip https://roboshop-builds.s3.amazonaws.com/shipping.zip &>>$LOGFILE
+VALIDATE $? "Downloading shipping application"
 
-VALIDATE $? "moving to app directory"
+cd /app  &>>$LOGFILE
+VALIDATE $? "Moving to app directory"
 
-unzip -o /tmp/shipping.zip &>> $LOGFILE
+rm -rf /app/*
+unzip /tmp/shipping.zip &>> $LOGFILE
+VALIDATE $? "Extracting shipping application"
 
-VALIDATE $? "unzipping shipping"
+mvn clean package &>>$LOGFILE
+VALIDATE $? "Packaging shipping"
 
-mvn clean package &>> $LOGFILE
+mv target/shipping-1.0.jar shipping.jar &>>$LOGFILE
+VALIDATE $? "Renaming the artifact"
 
-VALIDATE $? "Installing dependencies"
+cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>>$LOGFILE
+VALIDATE $? "Copying service file"
 
-mv target/shipping-1.0.jar shipping.jar &>> $LOGFILE
+systemctl daemon-reload &>>$LOGFILE
+VALIDATE $? "Daemon reload"
 
-VALIDATE $? "renaming jar file"
+systemctl enable shipping  &>>$LOGFILE
+VALIDATE $? "Enabling shipping"
 
-cp /home/ec2-user/roboshops-shell/shipping.service /etc/systemd/system/shipping.service &>> $LOGFILE
+systemctl start shipping &>>$LOGFILE
+VALIDATE $? "Starting shipping"
 
-VALIDATE $? "copying shipping service"
+dnf install mysql -y &>>$LOGFILE
+VALIDATE $? "Installing MySQL"
 
-systemctl daemon-reload &>> $LOGFILE
+mysql -h $MYSQL_SERVER -uroot -pRoboShop@1 -e "use cities" &>>$LOGFILE
+if [ $? -ne 0 ]
+then
+    echo "Schema is ... LOADING"
+    mysql -h $MYSQL_SERVER -uroot -pRoboShop@1 < /app/schema/shipping.sql &>>$LOGFILE
+    VALIDATE $? "Loading schema"
+else
+    echo -e "Schema already exists... $Y SKIPPING $N"
+fi
 
-VALIDATE $? "deamon reload"
-
-systemctl enable shipping  &>> $LOGFILE
-
-VALIDATE $? "enable shipping"
-
-systemctl start shipping &>> $LOGFILE
-
-VALIDATE $? "start shipping"
-
-dnf install mysql -y &>> $LOGFILE
-
-VALIDATE $? "install MySQL client"
-
-mysql -h mysql.neelareddy.store -uroot -pRoboShop@1 < /app/schema/shipping.sql &>> $LOGFILE
-
-VALIDATE $? "loading shipping data"
-
-systemctl restart shipping &>> $LOGFILE
-
-VALIDATE $? "restart shipping"
-
-
-
+systemctl restart shipping &>>$LOGFILE
+VALIDATE $? "Restarted Shipping"
