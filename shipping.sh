@@ -75,8 +75,8 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL"
 
-cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
-VALIDATE $? "Copied schema file"
+# cp /home/ec2-user/roboshops-shell/shipping.sql /app/schema/shipping.sql &>>$LOGFILE
+# VALIDATE $? "Copied schema file"
 
 mysql -h $MYSQL_SERVER -uroot -pRoboShop@1 -e "use cities" &>>$LOGFILE
 if [ $? -ne 0 ]
