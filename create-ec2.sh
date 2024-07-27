@@ -1,11 +1,12 @@
 #!/bin/bash
 
-instances=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "web")
+instances=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "payment" "web")
 domain_name="neelareddy.store"
 hosted_zone_id="Z001712433NLPH2AI8HH5"
 
 for name in ${instances[@]}; do
-    if [ $name == "shipping" ] || [ $name == "mysql" ]
+    # if [ $name == "shipping" ] || [ $name == "mysql" ]
+    if [ $name == "mysql" ]
     then
         instance_type="t3.medium"
     else
